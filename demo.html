@@ -1,0 +1,35 @@
+
+<script src="./HtmlVisualEditor.js"></script>
+<script src="./js/jquery-2.1.4.js"></script>
+<script src="./js/fun.js"></script>
+
+
+
+
+<div id="cont" style="display:none;">
+<li class="shadow1">
+							<div class="plug_img"><a target="_black" href="35328.html"><img class="" src="http://cdn.weiunity.com/site/341/news/bda84cbc0c9e467bb7751c10a0e75ad1.png" alt="后台开放API"></a></div>
+							<div class="plug_p">
+								<a target="_black" href="35328.html">后台开放API</a>
+								<p>比如代理后台开通网站及管理网站、网站后台通过接口发布文章、生成整站等功能。让你现有的系统，通过api接口，将网市场云建站系统嵌入你原本的系统之中，让你原本的系统，快速拥有建站功能。</p>
+							</div>
+						</li>
+</div>
+
+
+
+<iframe src="" id="HtmlVisualEditor_Iframe" style="width:100%; height:500px;"></iframe>
+<div id="HtmlVisualEditor_EditPanel"><!-- 编辑属性的面板区域 --></div>
+<script type="text/javascript">
+HtmlVisualEditor.document.iframeId = 'HtmlVisualEditor_Iframe';
+HtmlVisualEditor.config.resBasePath = './';
+HtmlVisualEditor.document.setHtml('<html><head></head><body>'+document.getElementById('cont').innerHTML+'</body></html>');
+HtmlVisualEditor.life.loadSupportFileFinsh();
+HtmlVisualEditor.life.loadFinish();
+
+
+</script>
+
+
+
+<button onclick="console.log(HtmlVisualEditor.document.getHtml())">获取html</button>

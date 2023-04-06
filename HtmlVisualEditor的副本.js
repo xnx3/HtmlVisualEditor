@@ -14,6 +14,87 @@
  * 
  */
 //网市场服务器域名，需在其父页面定义变量masterSiteUrl，如 var masterSiteUrl = '//wang.market/' ， 然后此可可视化编辑的页面，是页面iframe引入的，可使用 parent.masterSiteUrl 调用;
+HtmlVisualEditor = {
+	//版本
+	version : '3.0',
+	//相关配置
+	config:{
+		//资源文件所在
+		resBasePath:'//res.zvo.com/',
+		//上传图片最大可允许上传的大小，单位是KB。如果未设置，默认是 3MB 
+		uploadImageMaxSize:3000, 
+		//上传图片保存的api接口。待补充接口规范约束。
+		uploadImageApi : '......uploadImage.json',
+
+	},
+	util:{
+		//同步方式加载js文件. url 传入相对路径，前面会自动拼接上 HtmlVisualEditor.config.resBasePath
+		syncLoadJs(url){
+			// 使用 XMLHttpRequest 对象发送同步请求
+			var xhr = new XMLHttpRequest ();
+			xhr.open ('GET', HtmlVisualEditor.config.resBasePath+url, false); // 第三个参数为 false 表示同步请求
+			xhr.send ();
+			// 使用 eval 函数执行响应文本
+			eval (xhr.responseText);
+		},
+		//异步方式加载css文件. url 传入相对路径，前面会自动拼接上 HtmlVisualEditor.config.resBasePath
+		loadCss(url){
+			var head = document.getElementsByTagName('head')[0];
+			var link = document.createElement('link');
+			link.href = HtmlVisualEditor.config.resBasePathurl;
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			head.appendChild(link);
+		}
+	}
+	//监听
+	listener:{
+		//针对鼠标的监听
+		mouse:function(){
+			$(document).mouseover(function(e){
+				if(xnx3_isUsed(e)){
+					if(typeof($.smartMenu) != 'undefined'){
+						//隐藏上次弹出的右键菜单
+						$.smartMenu.hide();
+						$.smartMenu.remove();	//清除动态数据
+					}else{
+						loadSmartMenu();
+					}
+					
+					e.target.style.border='2px dashed';
+					e.target.style.boxSizing='border-box';
+				}
+			}).mouseout(function(e){
+				e.target.style.border='';
+				e.target.style.boxSizing='';
+			}).mousedown(function(e){
+				var je = $(e.target);
+				//alert(e.which) // 1 = 鼠标左键 left; 2 = 鼠标中键; 3 = 鼠标右键 
+				//试着chrome反着，去掉
+				if(e.which == 3){
+				}
+				if(xnx3_isUsed(e)){
+					currenctMouseRightElement = e.target;
+					xnx3_mouseDown_imgTag(e.target);
+				}
+				
+			});
+			xnx3_log("create mouse listener");
+		}
+	},
+
+	//生命周期
+	life:{
+		//加载支持文件完成，func.js等，在JQuery之后调用
+		loadSupportFileFinsh:function(){
+			HtmlVisualEditor.util.syncLoadJs('js/fun.js');
+			HtmlVisualEditor.util.syncLoadJs();
+			HtmlVisualEditor.util.syncLoadJs();
+		}
+	}
+
+};
+
 
 //当前版本
 var htmledit_version = '2.2';
