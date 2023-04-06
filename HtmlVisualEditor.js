@@ -115,6 +115,10 @@ HtmlVisualEditor = {
 			//对html进行处理
 			//将 style="" 去掉
 			html = html.replace (/\s*style=\"\"/g, "");
+			//将js限制求掉
+			html = html.replace (/<meta http-equiv="content-security-policy" content="script-src 'none'">/g, "");
+			
+
 			return html;
 		},
 		//获取父页面的document
@@ -126,8 +130,21 @@ HtmlVisualEditor = {
 		},
 		//鼠标放上修改元素时
 		editElement:function(obj){
-			console.log(obj.target.tagName);
-			HtmlVisualEditor.document.editPanel().innerHTML = obj.target.tagName;
+			//if(obj.target.childNodes.length > 0){
+				//还有子元素，那忽略他
+			//	return;
+			//}
+			var tagname = obj.target.tagName;
+
+			
+			if(tagname == 'IMG'){
+				console.log(obj.target.tagName);
+				HtmlVisualEditor.document.editPanel().innerHTML = 'tag:img, src:'+obj.target.src;
+			}else if(tagname == 'A'){
+				HtmlVisualEditor.document.editPanel().innerHTML = 'tag:a, href:'+obj.target.href;
+			}
+
+			
 		}
 	},
 	//生命周期
