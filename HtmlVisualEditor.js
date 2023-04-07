@@ -22,10 +22,10 @@ HtmlVisualEditor = {
 		//资源文件所在
 		resBasePath:'//res.zvo.com/',
 		//上传图片最大可允许上传的大小，单位是KB。如果未设置，默认是 3MB 
-		uploadImageMaxSize:3000, 
+		//uploadImageMaxSize:3000, 
 		//上传图片保存的api接口。待补充接口规范约束。
-		uploadImageApi : '......uploadImage.json',
-
+		//设置入 http://xxxx.com/uploadImage.json
+		uploadImageApi : '', 
 	},
 	util:{
 		//同步方式加载js文件. url 传入相对路径，前面会自动拼接上 HtmlVisualEditor.config.resBasePath
@@ -94,6 +94,7 @@ HtmlVisualEditor = {
 		set:function(iframe_id){
 			HtmlVisualEditor.document.iframeId = iframe_id;
 		},
+		//设置可视化编辑的html源码
 		setHtml:function(html){
 			var o = document.getElementById(HtmlVisualEditor.document.iframeId);
 			ed = document.all ? o.contentWindow.document : o.contentDocument;
@@ -128,6 +129,14 @@ HtmlVisualEditor = {
 		editPanel:function(){
 			return HtmlVisualEditor.document.parent().getElementById('HtmlVisualEditor_EditPanel');
 		},
+		//是否有子元素，true 有
+		hasChild:function(obj){
+			for(var i = 0; i<obj.children.length; i++){
+				console.log(obj.children[i]);
+			}
+			return obj.children.length > 0;
+
+		},
 		//鼠标放上修改元素时
 		editElement:function(obj){
 			//if(obj.target.childNodes.length > 0){
@@ -135,16 +144,88 @@ HtmlVisualEditor = {
 			//	return;
 			//}
 			var tagname = obj.target.tagName;
+			console.log(tagname+', '+HtmlVisualEditor.document.hasChild(obj.target));
+			HtmlVisualEditor.editPanel.current = obj.target;
 
-			
-			if(tagname == 'IMG'){
-				console.log(obj.target.tagName);
-				HtmlVisualEditor.document.editPanel().innerHTML = 'tag:img, src:'+obj.target.src;
-			}else if(tagname == 'A'){
-				HtmlVisualEditor.document.editPanel().innerHTML = 'tag:a, href:'+obj.target.href;
+			//判断当前是否设置了背景图
+			var backgroundImage = HtmlVisualEditor.document.getStyleBackgroundImage(obj.target);
+			console.log(backgroundImage)
+
+
+			var html = '';
+			switch(tagname){
+				case 'IMG':
+					html = HtmlVisualEditor.editPanel.tag.img;
+				break;
+				case 'A':
+					html = HtmlVisualEditor.editPanel.tag.a;
+				break;
+				default:
+					if(backgroundImage != null){
+						//设置了背景图
+						html = HtmlVisualEditor.editPanel.css.backgroundImage;
+						html = html.replace (/{src}/g, backgroundImage);
+					}
+			}
+
+				
+				
+			//底部保存按钮
+			var saveButton = '<span onclick="HtmlVisualEditor.editPanel.save();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">保存</span>';
+			if(html.length > 0){
+				html = html + saveButton;
+			}
+
+			//头部标签属性
+			html = HtmlVisualEditor.editPanel.head + html;
+
+
+			//数据赋予
+			if(html.indexOf('{id}') > -1){
+				html = html.replace (/{id}/g, obj.target.id);
+			}
+			if(html.indexOf('{tag}') > -1){
+				html = html.replace (/{tag}/g, obj.target.tagName);
+			}
+			if(html.indexOf('{text}') > -1){
+				html = html.replace (/{text}/g, obj.target.innerHTML);
+			}
+			if(html.indexOf('{src}') > -1){
+				html = html.replace (/{src}/g, obj.target.src);
+			}
+			if(html.indexOf('{href}') > -1){
+				html = html.replace (/{href}/g, obj.target.getAttribute('href'));
+			}
+			if(html.indexOf('{alt}') > -1){
+				html = html.replace (/{alt}/g, obj.target.alt);
 			}
 
 			
+			HtmlVisualEditor.document.editPanel().innerHTML = html;
+
+			//弹窗使用说明参考 https://gitee.com/leimingyun/dashboard/wikis/leimingyun/msgjs/preview?sort_id=4112035&doc_id=1473987
+			/*
+			msg.popups({
+			    text:'<div>'+html+'</div>',
+			    padding:'1px',
+			    height:'600px',
+			    //background:'#FFFFFF',
+			    opacity:80,
+			    padding:'1rem'
+			});
+			*/
+
+		},
+		//获取元素的css设置的背景图的url。如果没有设置，则返回null
+		getStyleBackgroundImage:function(element){
+			//使用window.getComputedStyle()方法的优点是可以获取元素的计算样式，即最终应用到元素上的样式，包括样式表、媒体查询、继承等因素的影响。缺点是这个方法返回的是一个只读的对象，无法修改元素的样式，而且在某些浏览器中，这个方法可能比较耗时。
+			var style = window.getComputedStyle(element);
+			var bg = style.backgroundImage;
+			if(bg == null || typeof(bg) == 'undefined' || bg == 'none'){
+				return null;
+			}
+			var url = bg.match(/url\(\"(.*)\"\)/)[1]; //使用正则表达式匹配url()中的内容
+			return url;
 		}
 	},
 	//生命周期
@@ -165,6 +246,98 @@ HtmlVisualEditor = {
 			//加入鼠标监听
 			HtmlVisualEditor.listener.mouse();
 		}
+	},
+	//编辑面板
+	editPanel:{
+		current:null,	//当前操作的元素
+		head: `
+			<div class="head">
+				<div><label>标签：</label>{tag}</div>
+				<div><label>ID：</label>{id}</div>
+			</div>
+		`,
+		tag:{
+			img : `
+				<h2>图片(img)</h2>
+				<div>
+					<label>图片(src)</label>
+					<a href="{src}" target="_black"><img src="{src}" style="height:30px;"></a>
+					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
+					<input type="text" name="src" id="HtmlVisualEditor_img_src" value="{src}" />
+					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">上传</span>
+				</div>
+				<div><label>说明(alt)</label><input type="text" name="alt" value="{alt}" /></div>
+			`,
+			a : `
+				<h2>超链接(a)</h2>
+				<div><label>文字</label><input type="text" name="text" value="{text}" /></div>
+				<div><label>链接(href)</label><input type="text" name="href" value="{href}" /></div>
+			`,
+		},
+		css:{
+			backgroundImage: `
+				<h2>背景图片(background-image)</h2>
+				<div>
+					<label>图片(src)</label>
+					<a href="{src}" target="_black"><img src="{src}" style="height:30px;"></a>
+					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
+					<input type="text" name="src" id="HtmlVisualEditor_img_src" value="{src}" />
+					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">上传</span>
+				</div>
+			`
+		},
+		//触发后可后上传图片
+		uploadImage:function(){
+			if(HtmlVisualEditor.config.uploadImageApi.length == 0){
+				msg.alert('未开启图片上传功能！您可配置 HtmlVisualEditor.config.uploadImageApi 上传接口来启用上传功能');
+				return;
+			}
+
+			var input = document.getElementById('HtmlVisualEditor_img_input_file');
+			// 给文件输入框添加改变事件，获取选择的文件并上传
+			input.addEventListener("change", function() {
+			  // 获取选择的文件对象
+			  var fileObj = input.files[0];
+			  // 创建一个表单数据对象
+			  var formData = new FormData();
+			  // 将文件对象添加到表单数据对象中，键名为upload
+			  formData.append("file", fileObj);
+			  // 创建一个XMLHttpRequest对象
+			  var xhr = new XMLHttpRequest();
+			  // 设置请求方法和地址
+			  xhr.open("POST", "upload.json");
+			  // 发送请求
+			  xhr.send(formData);
+			});
+			input.click();
+
+
+
+
+			//var file = input.files[0]
+			//request.upload('upload.json',{}, input.files[0]);
+		},
+		save:function(){
+			var form = wm.getJsonObjectByForm($('#HtmlVisualEditor_EditPanel'));
+			console.log(form);
+			if(HtmlVisualEditor.editPanel.current == null){
+				msg.alert('error');
+				return;
+			}
+
+			for (var key in form) {
+				if(HtmlVisualEditor.editPanel.current[key] != 'undefined'){
+					HtmlVisualEditor.editPanel.current[key] = form[key];
+				}
+			  	console.log(key + ": " + form[key]); // 输出 name: Alice 和 age: 20
+			}
+			if(form['text'] != 'undefined'){
+				HtmlVisualEditor.editPanel.current.innerHTML = form['text'];
+			}
+
+
+		}
+
 	}
 
 };
