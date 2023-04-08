@@ -1,0 +1,8 @@
+/*.鼠标点中后出现的属性编辑面板 */
+#HtmlVisualEditor_EditPanel{
+		width: 300px;
+		position: absolute;
+		left: 700px; 
+		top: 20px; 
+		border-style: groove;
+}
