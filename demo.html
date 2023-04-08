@@ -25,7 +25,7 @@
 
 <iframe src="" id="HtmlVisualEditor_Iframe" style="width:700px; height:500px;"></iframe>
 
-<div style="width:300px; float:right;">
+<div style="    width: 300px;position: absolute;left: 700px; top: 20px; border-style: groove;">
 	<form id="HtmlVisualEditor_EditPanel"><!-- 编辑属性的面板区域 --></form>
 </div>
 
@@ -34,6 +34,8 @@
 
 
 HtmlVisualEditor.document.iframeId = 'HtmlVisualEditor_Iframe';
+HtmlVisualEditor.config.uploadImageApi = 'https://api.kefu.leimingyun.com/kefu/chat/file/uploadImage.json';
+
 HtmlVisualEditor.config.resBasePath = './';
 HtmlVisualEditor.document.setHtml('<html><head><meta http-equiv="content-security-policy" content="script-src \'none\'"></head><body>'+document.getElementById('cont').innerHTML+'</body></html>');
 HtmlVisualEditor.life.loadSupportFileFinsh();

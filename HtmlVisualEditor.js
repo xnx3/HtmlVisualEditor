@@ -102,23 +102,31 @@ HtmlVisualEditor = {
 			ed.write(html);
 			ed.close();
 		},
+
 		//获取可视化编辑的html源码
 		getHtml(){
 			//将body的contentEditable设为false
-			HtmlVisualEditor.document.get().body.contentEditable=false;
+			try{
+				HtmlVisualEditor.document.get().body.contentEditable=false;
+			}catch(e){ console.log(e); }
+			
 
 			//取html内容
 			var html = HtmlVisualEditor.document.get().documentElement.outerHTML;
 
 			//再讲页面显示相关还原回去
-			HtmlVisualEditor.document.get().body.contentEditable=true;			
+			try{
+				HtmlVisualEditor.document.get().body.contentEditable=true;			
+			}catch(e){ console.log(e); }
+			
 
 			//对html进行处理
 			//将 style="" 去掉
 			html = html.replace (/\s*style=\"\"/g, "");
 			//将js限制求掉
 			html = html.replace (/<meta http-equiv="content-security-policy" content="script-src 'none'">/g, "");
-			
+			//将 body 的  contenteditable="false" 去掉
+			html = html.replace (/\scontenteditable=\"false\"/g, "");
 
 			return html;
 		},
@@ -254,6 +262,7 @@ HtmlVisualEditor = {
 			<div class="head">
 				<div><label>标签：</label>{tag}</div>
 				<div><label>ID：</label>{id}</div>
+				<div><label>操作：</label><a href="javascript:HtmlVisualEditor.editPanel.remove()">删除</a> | <a href="javascript:alert(HtmlVisualEditor.editPanel.current.innerHTML)">源码</a> </div>
 			</div>
 		`,
 		tag:{
@@ -281,7 +290,7 @@ HtmlVisualEditor = {
 					<label>图片(src)</label>
 					<a href="{src}" target="_black"><img src="{src}" style="height:30px;"></a>
 					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
-					<input type="text" name="src" id="HtmlVisualEditor_img_src" value="{src}" />
+					<input type="text" name="style.backgroundImage" id="HtmlVisualEditor_img_src" value="{src}" />
 					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">上传</span>
 				</div>
 			`
@@ -326,17 +335,29 @@ HtmlVisualEditor = {
 			}
 
 			for (var key in form) {
-				if(HtmlVisualEditor.editPanel.current[key] != 'undefined'){
+				console.log(key + ": " + form[key]); // 输出 name: Alice 和 age: 20
+				if(typeof(HtmlVisualEditor.editPanel.current[key]) != 'undefined'){
+					//是html本身的属性，那么直接赋予
 					HtmlVisualEditor.editPanel.current[key] = form[key];
+				}else if(key.indexOf('style.backgroundImage') > -1){
+					//是css的属性 - 设置背景图
+					HtmlVisualEditor.editPanel.current.style.backgroundImage = "url('"+form[key]+"')";
 				}
-			  	console.log(key + ": " + form[key]); // 输出 name: Alice 和 age: 20
 			}
-			if(form['text'] != 'undefined'){
+			if(typeof(form['text']) != 'undefined'){
 				HtmlVisualEditor.editPanel.current.innerHTML = form['text'];
 			}
 
+		},
+		//删除当前选定的元素
+		remove:function(){
+			if(HtmlVisualEditor.editPanel.current == null){
+				return;
+			}
 
-		}
+			HtmlVisualEditor.editPanel.current.remove();
+		},
+
 
 	}
 
