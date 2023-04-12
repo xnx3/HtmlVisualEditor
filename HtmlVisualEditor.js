@@ -337,7 +337,7 @@ HtmlVisualEditor = {
 							msg.alert(data.info);
 						}
 			  		},
-			  		{'content-type':'application/x-www-form-urlencoded'},
+			  		{},
 			  		function(xhr){
 			  			msg.close();
 			  			msg.alert('响应异常');
