@@ -260,20 +260,20 @@ HtmlVisualEditor = {
 		current:null,	//当前操作的元素
 		head: `
 			<div class="head">
-				<div><label>标签：</label>{tag}</div>
-				<div><label>ID：</label>{id}</div>
-				<div><label>操作：</label><a href="javascript:HtmlVisualEditor.editPanel.remove()">删除</a> | <a href="javascript:alert(HtmlVisualEditor.editPanel.current.innerHTML)">源码</a> </div>
+				<div><label>标签：</label><span>{tag}</span></div>
+				<div><label>ID：</label><span>{id}</span></div>
+				<div><label>操作：</label><a href="javascript:HtmlVisualEditor.editPanel.remove()" class="delete">删除</a> | <a href="javascript:alert(HtmlVisualEditor.editPanel.current.innerHTML)" class="source">源码</a> </div>
 			</div>
 		`,
 		tag:{
 			img : `
 				<h2>图片(img)</h2>
-				<div>
+				<div class="img">
 					<label>图片(src)</label>
-					<a href="{src}" target="_black"><img src="{src}" style="height:30px;"></a>
+					<a class="preview_a" href="{src}" target="_black"><img class="preview_img" src="{src}"></a>
 					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
 					<input type="text" name="src" id="HtmlVisualEditor_img_src" value="{src}" />
-					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">上传</span>
+					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" class="upload">上传</span>
 				</div>
 				<div><label>说明(alt)</label><input type="text" name="alt" value="{alt}" /></div>
 			`,

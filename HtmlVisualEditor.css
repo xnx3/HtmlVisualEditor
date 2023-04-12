@@ -1,8 +1,31 @@
-/*.鼠标点中后出现的属性编辑面板 */
+/* 鼠标点中后出现的属性编辑面板相关 */
 #HtmlVisualEditor_EditPanel{
 		width: 300px;
 		position: absolute;
 		left: 700px; 
 		top: 20px; 
 		border-style: groove;
+}
+
+/* 编辑面板的标题，也就是当前正在修改的是哪个，H2 */
+#HtmlVisualEditor_EditPanel h2{
+	font-size:3rem;
+}
+
+
+/****** 修改图片属性面板相关 ******/
+/* 图片src的输入框 */
+#HtmlVisualEditor_EditPanel .img .preview_img{
+	height:30px;
+}
+/* 图片src的输入框 */
+#HtmlVisualEditor_EditPanel .img #HtmlVisualEditor_img_src{
+	padding:0.3rem;
+	border-radius: 0.5rem;
+}
+#HtmlVisualEditor_EditPanel .img .upload{
+	border-style: groove; 
+	padding-left: 10px;
+	padding-right: 10px;
+	cursor: pointer;
 }
