@@ -270,7 +270,7 @@ HtmlVisualEditor = {
 				<h2>图片(img)</h2>
 				<div class="img">
 					<label>图片(src)</label>
-					<a class="preview_a" href="{src}" target="_black"><img class="preview_img" src="{src}"></a>
+					<a id="preview_img_a" href="{src}" target="_black"><img id="preview_img" src="{src}"></a>
 					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
 					<input type="text" name="src" id="HtmlVisualEditor_img_src" value="{src}" />
 					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" class="upload">上传</span>
@@ -332,7 +332,13 @@ HtmlVisualEditor = {
 						msg.close();
 						if(data.result == 1){
 							msg.success('上传成功');
+							//input 输入框中的值
 							document.getElementById('HtmlVisualEditor_img_src').value = data.url;
+							//输入框边上的预览图片的小图
+							document.getElementById('preview_img').src = data.url;
+							//输入框边上的预览图片的小图-的超链接url
+							document.getElementById('preview_img_a').href = data.url;
+
 						}else{
 							msg.alert(data.info);
 						}
