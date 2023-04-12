@@ -31,7 +31,7 @@
 }
 #HtmlVisualEditor_EditPanel #editPanel_Save{
 	border-style: groove;
-    cursor: alias;
+    cursor: pointer;
     font-size: 28px;
     padding-left: 55px;
     padding-right: 55px;
