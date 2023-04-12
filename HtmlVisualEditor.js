@@ -302,10 +302,12 @@ HtmlVisualEditor = {
 				return;
 			}
 
-			msg.loading('上传中');
+			
 			var input = document.getElementById('HtmlVisualEditor_img_input_file');
 			// 给文件输入框添加改变事件，获取选择的文件并上传
 			input.addEventListener("change", function() {
+				
+
 			  /*
 			  // 获取选择的文件对象
 			  var fileObj = input.files[0];
@@ -320,10 +322,11 @@ HtmlVisualEditor = {
 			  // 发送请求
 			  xhr.send(formData);
 			*/
-			
+			  msg.loading('上传中');
 			  request.upload(
 			  		HtmlVisualEditor.config.uploadImageApi,
-			  		{"source":"HtmlVisualEditor"},
+			  		//{"source":"HtmlVisualEditor"},
+			  		{},
 			  		input.files[0],
 			  		function(data){
 						msg.close();
@@ -331,7 +334,7 @@ HtmlVisualEditor = {
 							msg.success('上传成功');
 							document.getElementById('HtmlVisualEditor_img_src').value = data.url;
 						}else{
-							msg.alert(msg.info);
+							msg.alert(data.info);
 						}
 			  		},
 			  		{'content-type':'application/x-www-form-urlencoded'},
