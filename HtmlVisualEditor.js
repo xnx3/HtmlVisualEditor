@@ -180,7 +180,7 @@ HtmlVisualEditor = {
 				
 			//底部保存按钮
 			if(html.length > 0){
-				html = html + HtmlVisualEditor.editPanel.head;
+				html = html + HtmlVisualEditor.editPanel.foot;
 			}else{
 				html = '请点击右侧要修改的区域';
 			}
