@@ -314,7 +314,7 @@ HtmlVisualEditor = {
 			  // 创建一个XMLHttpRequest对象
 			  var xhr = new XMLHttpRequest();
 			  // 设置请求方法和地址
-			  xhr.open("POST", "upload.json");
+			  xhr.open("POST", HtmlVisualEditor.config.uploadImageApi);
 			  // 发送请求
 			  xhr.send(formData);
 			});
