@@ -15,7 +15,7 @@
 
 /****** 修改图片属性面板相关 ******/
 /* 图片src的输入框 */
-#HtmlVisualEditor_EditPanel .img .preview_img{
+#HtmlVisualEditor_EditPanel .img #preview_img{
 	height:30px;
 }
 /* 图片src的输入框 */
