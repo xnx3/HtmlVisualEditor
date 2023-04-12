@@ -52,7 +52,8 @@ HtmlVisualEditor.life.loadFinish();
 
 
 
-<button onclick="alert(HtmlVisualEditor.document.getHtml())">获取html</button>
+<!-- <button onclick="alert(HtmlVisualEditor.document.getHtml())">获取html</button> -->
+<button onclick="window.open('', '', 'width=500px,height=500px').document.write(HtmlVisualEditor.document.getHtml());" style="    font-size: 30px;">预览</button>
 
 </body>
 </html>
