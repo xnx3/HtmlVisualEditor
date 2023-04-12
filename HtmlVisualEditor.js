@@ -179,9 +179,10 @@ HtmlVisualEditor = {
 				
 				
 			//底部保存按钮
-			var saveButton = '<span onclick="HtmlVisualEditor.editPanel.save();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">保存</span>';
 			if(html.length > 0){
-				html = html + saveButton;
+				html = html + HtmlVisualEditor.editPanel.head;
+			}else{
+				html = '请点击右侧要修改的区域';
 			}
 
 			//头部标签属性
@@ -264,6 +265,9 @@ HtmlVisualEditor = {
 				<div><label>ID：</label><span>{id}</span></div>
 				<div><label>操作：</label><a href="javascript:HtmlVisualEditor.editPanel.remove()" class="delete">删除</a> | <a href="javascript:alert(HtmlVisualEditor.editPanel.current.innerHTML)" class="source">源码</a> </div>
 			</div>
+		`,
+		foot: `
+			<div onclick="HtmlVisualEditor.editPanel.save();" id="editPanel_Save">保存</div>
 		`,
 		tag:{
 			img : `

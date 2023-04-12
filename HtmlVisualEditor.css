@@ -29,3 +29,14 @@
 	padding-right: 10px;
 	cursor: pointer;
 }
+#HtmlVisualEditor_EditPanel #editPanel_Save{
+	border-style: groove;
+    cursor: alias;
+    font-size: 28px;
+    padding-left: 55px;
+    padding-right: 55px;
+    width: 200px;
+    margin: 10px;
+    text-align: center;
+    background: yellow;
+}
