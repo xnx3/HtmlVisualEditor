@@ -302,9 +302,11 @@ HtmlVisualEditor = {
 				return;
 			}
 
+			msg.loading('上传中');
 			var input = document.getElementById('HtmlVisualEditor_img_input_file');
 			// 给文件输入框添加改变事件，获取选择的文件并上传
 			input.addEventListener("change", function() {
+			  /*
 			  // 获取选择的文件对象
 			  var fileObj = input.files[0];
 			  // 创建一个表单数据对象
@@ -317,6 +319,29 @@ HtmlVisualEditor = {
 			  xhr.open("POST", HtmlVisualEditor.config.uploadImageApi);
 			  // 发送请求
 			  xhr.send(formData);
+			*/
+			
+			  request.upload(
+			  		HtmlVisualEditor.config.uploadImageApi,
+			  		{"source":"HtmlVisualEditor"},
+			  		input.files[0],
+			  		function(data){
+						msg.close();
+						if(data.result == 1){
+							msg.success('上传成功');
+							document.getElementById('HtmlVisualEditor_img_src').value = data.url;
+						}else{
+							msg.alert(msg.info);
+						}
+			  		},
+			  		{'content-type':'application/x-www-form-urlencoded'},
+			  		function(xhr){
+			  			msg.close();
+			  			msg.alert('响应异常');
+			  			console.log(xhr);
+			  		}
+			  );
+
 			});
 			input.click();
 
