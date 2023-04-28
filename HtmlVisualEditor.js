@@ -20,7 +20,7 @@ HtmlVisualEditor = {
 	//相关配置
 	config:{
 		//资源文件所在
-		resBasePath:'//res.zvo.com/',
+		resBasePath:'https://res.zvo.cn/',
 		//上传图片最大可允许上传的大小，单位是KB。如果未设置，默认是 3MB 
 		//uploadImageMaxSize:3000, 
 		//上传图片保存的api接口。待补充接口规范约束。
@@ -30,12 +30,55 @@ HtmlVisualEditor = {
 	util:{
 		//同步方式加载js文件. url 传入相对路径，前面会自动拼接上 HtmlVisualEditor.config.resBasePath
 		syncLoadJs(url){
+			/*
 			// 使用 XMLHttpRequest 对象发送同步请求
 			var xhr = new XMLHttpRequest ();
 			xhr.open ('GET', HtmlVisualEditor.config.resBasePath+url, false); // 第三个参数为 false 表示同步请求
 			xhr.send ();
+			//console.log(xhr.responseText);
 			// 使用 eval 函数执行响应文本
 			eval (xhr.responseText);
+			*/
+			var  xmlHttp = null;  
+			if(window.ActiveXObject){//IE  
+				try {  
+					//IE6以及以后版本中可以使用  
+					xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");  
+				} catch (e) {  
+					//IE5.5以及以后版本可以使用  
+					xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");  
+				}  
+			}else if(window.XMLHttpRequest){  
+				//Firefox，Opera 8.0+，Safari，Chrome  
+				xmlHttp = new XMLHttpRequest();  
+			}  
+			//采用同步加载  
+			xmlHttp.open("GET",HtmlVisualEditor.config.resBasePath+url,false);  
+			//发送同步请求，如果浏览器为Chrome或Opera，必须发布后才能运行，不然会报错  
+			xmlHttp.send(null);  
+			//4代表数据发送完毕  
+			if( xmlHttp.readyState == 4 ){  
+				//0为访问的本地，200到300代表访问服务器成功，304代表没做修改访问的是缓存  
+				if((xmlHttp.status >= 200 && xmlHttp.status <300) || xmlHttp.status == 0 || xmlHttp.status == 304){  
+					var myBody = document.getElementsByTagName("HTML")[0];  
+					var myScript = document.createElement( "script" );  
+					myScript.language = "javascript";  
+					myScript.type = "text/javascript";  
+					try{  
+						//IE8以及以下不支持这种方式，需要通过text属性来设置  
+						myScript.appendChild(document.createTextNode(xmlHttp.responseText));  
+					}catch (ex){  
+						myScript.text = xmlHttp.responseText;  
+					}  
+					myBody.appendChild(myScript);  
+					return true;  
+				}else{  
+					return false;  
+				}  
+			}else{  
+				return false;  
+			}  
+
 		},
 		//异步方式加载css文件. url 传入相对路径，前面会自动拼接上 HtmlVisualEditor.config.resBasePath
 		loadCss(url){
@@ -101,6 +144,9 @@ HtmlVisualEditor = {
 			ed.open();
 			ed.write(html);
 			ed.close();
+			
+			//隔开点时间，避免找不到报错
+			setTimeout('HtmlVisualEditor.life.loadFinish()', 500);
 		},
 
 		//获取可视化编辑的html源码
@@ -244,7 +290,8 @@ HtmlVisualEditor = {
 			
 			//HtmlVisualEditor.util.syncLoadJs('js/jquery-2.1.4.js');
 			//HtmlVisualEditor.util.syncLoadJs('js/fun.js');
-			HtmlVisualEditor.util.loadCss('htmledit.css');
+
+			//HtmlVisualEditor.util.loadCss('htmledit.css');
 
 
 		},
@@ -254,6 +301,7 @@ HtmlVisualEditor = {
 
 			//加入鼠标监听
 			HtmlVisualEditor.listener.mouse();
+			console.log('life loadFilish');
 		}
 	},
 	//编辑面板
@@ -292,7 +340,7 @@ HtmlVisualEditor = {
 				<h2>背景图片(background-image)</h2>
 				<div>
 					<label>图片(src)</label>
-					<a href="{src}" target="_black"><img src="{src}" style="height:30px;"></a>
+					<a href="{src}" target="_black"><img id="preview_img" src="{src}" style="height:30px;"></a>
 					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
 					<input type="text" name="style.backgroundImage" id="HtmlVisualEditor_img_src" value="{src}" />
 					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">上传</span>
@@ -397,6 +445,28 @@ HtmlVisualEditor = {
 		},
 
 
+	},
+	//初始化，比如加载js依赖
+	init:function(){
+		
+		//加载JS
+		if(typeof($) == 'undefined'){
+			HtmlVisualEditor.util.syncLoadJs('js/jquery-2.1.4.js');
+		}
+		if(typeof(wm) == 'undefined'){
+			HtmlVisualEditor.util.syncLoadJs('wm/wm.js');
+		}
+		if(typeof(request) == 'undefined'){
+			HtmlVisualEditor.util.syncLoadJs('request/request.js');
+		}
+		if(typeof(msg) == 'undefined'){
+			HtmlVisualEditor.util.syncLoadJs('msg/msg.js');
+		}
+		
+		//加载CSS
+		HtmlVisualEditor.util.loadCss('./HtmlVisualEditor.css');
 	}
 
 };
+
+HtmlVisualEditor.init();
