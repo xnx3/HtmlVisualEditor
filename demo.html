@@ -7,13 +7,7 @@
 	
 	<!-- 资源文件引入 -->
 	<script src="./HtmlVisualEditor.js"></script>
-	<script src="./js/jquery-2.1.4.js"></script>
-	<script src="./js/fun.js"></script>
-	<script src="./js/wm.js"></script>
-	<script src="./js/request.js"></script>
-	<script src="./js/msg.js"></script>
 	<link rel="stylesheet" href="./HtmlVisualEditor.css">
-
 </head>
 <body>
 
@@ -29,10 +23,7 @@
 
 
 
-<iframe src="" id="HtmlVisualEditor_Iframe" style="width:700px; height:500px;"></iframe>
-
-
-<form id="HtmlVisualEditor_EditPanel"><!-- 编辑属性的面板区域 -->请点击右侧要修改的区域</form>
+<iframe src="" id="HtmlVisualEditor_Iframe" style="width:100%; height:500px;"></iframe>
 
 
 
@@ -44,8 +35,7 @@ HtmlVisualEditor.config.uploadImageApi = 'https://api.kefu.leimingyun.com/kefu/c
 
 HtmlVisualEditor.config.resBasePath = './';
 HtmlVisualEditor.document.setHtml('<html><head><meta http-equiv="content-security-policy" content="script-src \'none\'"></head><body>'+document.getElementById('cont').innerHTML+'</body></html>');
-HtmlVisualEditor.life.loadSupportFileFinsh();
-HtmlVisualEditor.life.loadFinish();
+
 
 
 </script>
@@ -54,8 +44,6 @@ HtmlVisualEditor.life.loadFinish();
 
 <button onclick="alert(HtmlVisualEditor.document.getHtml())">获取html源码</button>
 <button onclick="window.open('', '', 'width=500px,height=500px,').document.write(HtmlVisualEditor.document.getHtml());" style="    font-size: 30px;">预览当前效果</button>
-
-<script src="https://vip.yunting6.cc/siteKefu.js?id=9752d379cbe641039de8c68974319bb9&template=2"></script>
 
 </body>
 </html>

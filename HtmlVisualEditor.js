@@ -139,6 +139,8 @@ HtmlVisualEditor = {
 		},
 		//设置可视化编辑的html源码
 		setHtml:function(html){
+			html = '<meta http-equiv="content-security-policy" content="script-src \'none\'">' + html;
+
 			var o = document.getElementById(HtmlVisualEditor.document.iframeId);
 			ed = document.all ? o.contentWindow.document : o.contentDocument;
 			ed.open();
@@ -146,7 +148,17 @@ HtmlVisualEditor = {
 			ed.close();
 			
 			//隔开点时间，避免找不到报错
-			setTimeout('HtmlVisualEditor.life.loadFinish()', 500);
+			setTimeout('HtmlVisualEditor.life.loadFinish()', 100);
+
+			//判断是否已经加载了编辑面板
+			var editPanel = document.getElementById('HtmlVisualEditor_EditPanel');
+			if(editPanel == null || typeof(editPanel) == 'undefined'){
+				//还没有编辑面板，需要加入
+				var form = document.createElement('form');
+				form.setAttribute('id', 'HtmlVisualEditor_EditPanel');
+				form.innerHTML = '<!-- 这是 HtmlVisualEditor 的属性编辑面板 -->';
+				document.body.appendChild(form);
+			}
 		},
 
 		//获取可视化编辑的html源码
