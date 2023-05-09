@@ -148,7 +148,21 @@ HtmlVisualEditor = {
 			ed.close();
 			
 			//隔开点时间，避免找不到报错
-			setTimeout('HtmlVisualEditor.life.loadFinish()', 100);
+			var htmlLoadInterval = setInterval(function(){
+				if(HtmlVisualEditor.document.get() == null){
+					return;
+				}
+				if(HtmlVisualEditor.document.get().body == null){
+					return;
+				}
+				if(HtmlVisualEditor.document.get().body.contentEditable == null){
+					return;
+				}
+				
+				//进行一些初始化
+				HtmlVisualEditor.life.loadFinish();
+				clearInterval(htmlLoadInterval);
+			}, 50);
 
 			//判断是否已经加载了编辑面板
 			var editPanel = document.getElementById('HtmlVisualEditor_EditPanel');
@@ -258,7 +272,7 @@ HtmlVisualEditor = {
 				html = html.replace (/{text}/g, obj.target.innerHTML);
 			}
 			if(html.indexOf('{src}') > -1){
-				html = html.replace (/{src}/g, obj.target.src);
+				html = html.replace (/{src}/g, obj.target.getAttribute('src'));
 			}
 			if(html.indexOf('{href}') > -1){
 				html = html.replace (/{href}/g, obj.target.getAttribute('href'));

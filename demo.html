@@ -14,11 +14,16 @@
 
 
 <div id="cont" style="display:none;">
-	<img draggable="true" src="http://cdn.weiunity.com/site/341/news/bda84cbc0c9e467bb7751c10a0e75ad1.png" style="width:200px;" />
-	<br/>
-	<a draggable="true" href="abc.html">哈喽，我是个超链接</a>
-	<br/>
-	<div draggable="true" style="background-image: url('http://cdn.weiunity.com/site/341/news/4a78af26c0d345bc96683fda2be7a66a.png');">这个区域<br/>的图片是<br/>个背景图</div>
+
+	<html><head></head><body>
+
+		<img draggable="true" src="http://cdn.weiunity.com/site/341/news/bda84cbc0c9e467bb7751c10a0e75ad1.png" style="width:200px;" />
+		<br/>
+		<a draggable="true" href="abc.html">哈喽，我是个超链接</a>
+		<br/>
+		<div draggable="true" style="background-image: url('http://cdn.weiunity.com/site/341/news/4a78af26c0d345bc96683fda2be7a66a.png');">这个区域<br/>的图片是<br/>个背景图</div>
+	</body>
+	</html>
 </div>
 
 
@@ -28,11 +33,8 @@
 
 
 <script type="text/javascript">
-
-
 HtmlVisualEditor.document.iframeId = 'HtmlVisualEditor_Iframe';
 HtmlVisualEditor.config.uploadImageApi = 'https://api.kefu.leimingyun.com/kefu/chat/file/uploadImage.json';
-
 HtmlVisualEditor.config.resBasePath = './';
 HtmlVisualEditor.document.setHtml('<html><head><meta http-equiv="content-security-policy" content="script-src \'none\'"></head><body>'+document.getElementById('cont').innerHTML+'</body></html>');
 
