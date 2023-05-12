@@ -80,21 +80,26 @@ HtmlVisualEditor = {
 			}  
 
 		},
+		//异步方式加载js文件. url 传入相对路径，前面会自动拼接上 HtmlVisualEditor.config.resBasePath
+		loadJs(url){
+			var script = document.createElement('script');
+			script.src = url;
+			document.body.appendChild(script);
+		},
 		//异步方式加载css文件. url 传入相对路径，前面会自动拼接上 HtmlVisualEditor.config.resBasePath
 		loadCss(url){
-			var head = document.getElementsByTagName('head')[0];
+			//var head = document.getElementsByTagName('head')[0];
 			var link = document.createElement('link');
 			link.href = HtmlVisualEditor.config.resBasePathurl;
 			link.rel = 'stylesheet';
 			link.type = 'text/css';
-			head.appendChild(link);
+			document.body.appendChild(link);
 		}
 	},
 	//监听
 	listener:{
 		//针对鼠标的监听
 		mouse:function(){
-
 			console.log('mouse listener add');
 
 			// 给 div 元素添加一个 click 事件处理函数
@@ -110,21 +115,43 @@ HtmlVisualEditor = {
 				e.target.style.border='';
 				e.target.style.boxSizing='';
 			}).mousedown(function(e){
-				var je = $(e.target);
+				HtmlVisualEditor.document.editElement(e);
 				//alert(e.which) // 1 = 鼠标左键 left; 2 = 鼠标中键; 3 = 鼠标右键 
 				//试着chrome反着，去掉
 				if(e.which == 1){
 					//console.log(e);
 					HtmlVisualEditor.document.editElement(e);
 				}
+				//console.log(e);
+				
+				/*
+				var html = ''+
+								+'<div>修改</div>'		  
+								+'<div>删除</div>'
+								+'<div>查看</div>'
+						   '';
+				var rect = HtmlVisualEditor.document.getIframeRect();
+				msg.popups({
+				    text:html,
+				    padding:'1px',
+				    height:'100px',
+					width:'100px',
+					top:e.clientY+rect.x+'px',
+					left:e.clientX+rect.y+'px',
+					close:true
+				});
+				*/
 				
 			});
+			
+			
+			
 		}
 	},
 	//当前操作的document对象 . 此段来源于 https://gitee.com/mail_osc/kefu.js/blob/main/kefu.js
 	document:{
 		iframeId:'', //iframe的id,在iframe中显示，那这里是显示界面的iframe 的 id 
-		//获取当前kefu.js操作的document对象
+		//获取当前 HtmlVisualEditor 操作的document对象
 		get:function(){
 			if(HtmlVisualEditor.document.iframeId.length < 1){
 				//不在iframe显示，那在当前页面显示
@@ -212,7 +239,7 @@ HtmlVisualEditor = {
 		//是否有子元素，true 有
 		hasChild:function(obj){
 			for(var i = 0; i<obj.children.length; i++){
-				console.log(obj.children[i]);
+				//console.log(obj.children[i]);
 			}
 			return obj.children.length > 0;
 
@@ -224,12 +251,12 @@ HtmlVisualEditor = {
 			//	return;
 			//}
 			var tagname = obj.target.tagName;
-			console.log(tagname+', '+HtmlVisualEditor.document.hasChild(obj.target));
+			//console.log(tagname+', '+HtmlVisualEditor.document.hasChild(obj.target));
 			HtmlVisualEditor.editPanel.current = obj.target;
-
+			
 			//判断当前是否设置了背景图
 			var backgroundImage = HtmlVisualEditor.document.getStyleBackgroundImage(obj.target);
-			console.log(backgroundImage)
+			//console.log(backgroundImage)
 
 
 			var html = '';
@@ -254,7 +281,7 @@ HtmlVisualEditor = {
 			if(html.length > 0){
 				html = html + HtmlVisualEditor.editPanel.foot;
 			}else{
-				html = '请点击右侧要修改的区域';
+				html = '请点击左侧要修改的区域进行编辑';
 			}
 
 			//头部标签属性
@@ -283,7 +310,9 @@ HtmlVisualEditor = {
 
 			
 			HtmlVisualEditor.document.editPanel().innerHTML = html;
-
+			
+			//将编辑面板显示出来
+			document.getElementById('HtmlVisualEditor_EditPanel').style.display = '';
 			//弹窗使用说明参考 https://gitee.com/leimingyun/dashboard/wikis/leimingyun/msgjs/preview?sort_id=4112035&doc_id=1473987
 			/*
 			msg.popups({
@@ -307,6 +336,13 @@ HtmlVisualEditor = {
 			}
 			var url = bg.match(/url\(\"(.*)\"\)/)[1]; //使用正则表达式匹配url()中的内容
 			return url;
+		},
+		//获取提供可视化编辑的iframe，在当前浏览器页面区域的位置坐标
+		getIframeRect:function(){
+			var iframe = document.getElementById(HtmlVisualEditor.document.iframeId);
+			var rect = iframe.getBoundingClientRect();
+			//console.log(rect.top, rect.right, rect.bottom, rect.left);
+			return rect;
 		}
 	},
 	//生命周期
@@ -323,10 +359,17 @@ HtmlVisualEditor = {
 		},
 		//加载完毕，要进入编辑模式了
 		loadFinish:function(){
+			//html直接编辑
 			HtmlVisualEditor.document.get().body.contentEditable=true;
 
 			//加入鼠标监听
 			HtmlVisualEditor.listener.mouse();
+			
+			//禁用iframe中的右键菜单
+			HtmlVisualEditor.document.get().oncontextmenu = function() { 
+				return false;
+			}
+			
 			console.log('life loadFilish');
 		}
 	},
@@ -336,40 +379,50 @@ HtmlVisualEditor = {
 		head: `
 			<div class="head">
 				<div><label>标签：</label><span>{tag}</span></div>
-				<div><label>ID：</label><span>{id}</span></div>
-				<div><label>操作：</label><a href="javascript:HtmlVisualEditor.editPanel.remove()" class="delete">删除</a> | <a href="javascript:alert(HtmlVisualEditor.editPanel.current.innerHTML)" class="source">源码</a> </div>
+				<div><label>操作：</label><a href="javascript:HtmlVisualEditor.editPanel.remove()" class="delete">删除</a> | <a href="javascript:HtmlVisualEditor.editPanel.editSource();" class="source">源码</a> </div>
 			</div>
 		`,
 		foot: `
-			<div onclick="HtmlVisualEditor.editPanel.save();" id="editPanel_Save">保存</div>
+			<div class="line">
+				<div onclick="HtmlVisualEditor.editPanel.save(); document.getElementById('HtmlVisualEditor_EditPanel').style.display = 'none';" id="editPanel_Save">保存</div>
+			</div>
 		`,
 		tag:{
 			img : `
 				<h2>图片(img)</h2>
-				<div class="img">
-					<label>图片(src)</label>
-					<a id="preview_img_a" href="{src}" target="_black"><img id="preview_img" src="{src}"></a>
+				<div class="line img">
+					<span class="name">图片(src)</span>
 					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
-					<input type="text" name="src" id="HtmlVisualEditor_img_src" value="{src}" />
+					<input type="text" name="src" id="HtmlVisualEditor_img_src" value="{src}" onchange="document.getElementById('preview_img').src = this.value;" />
+					<a id="preview_img_a" href="{src}" target="_black"><img id="preview_img" src="{src}"></a>
 					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" class="upload">上传</span>
 				</div>
-				<div><label>说明(alt)</label><input type="text" name="alt" value="{alt}" /></div>
+				<div class="line">
+					<span class="name">说明(alt)</span>
+					<input type="text" name="alt" value="{alt}" />
+				</div>
 			`,
 			a : `
 				<h2>超链接(a)</h2>
-				<div><label>文字</label><input type="text" name="text" value="{text}" /></div>
-				<div><label>链接(href)</label><input type="text" name="href" value="{href}" /></div>
+				<div class="line">
+					<span class="name">文字</span>
+					<input type="text" name="text" value="{text}" />
+				</div>
+				<div class="line">
+					<span class="name">链接(href)</span>
+					<input type="text" name="href" value="{href}" />
+				</div>
 			`,
 		},
 		css:{
 			backgroundImage: `
-				<h2>背景图片(background-image)</h2>
-				<div>
-					<label>图片(src)</label>
-					<a href="{src}" target="_black"><img id="preview_img" src="{src}" style="height:30px;"></a>
+				<h2>背景图(background-image)</h2>
+				<div class="line img">
+					<span class="name">图片(src)</span>
 					<input type="file" style="display:none;" id="HtmlVisualEditor_img_input_file" value="" />
-					<input type="text" name="style.backgroundImage" id="HtmlVisualEditor_img_src" value="{src}" />
-					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" style="border-style: groove; padding-left: 10px;padding-right: 10px;cursor: pointer;">上传</span>
+					<input type="text" name="style.backgroundImage" id="HtmlVisualEditor_img_src" value="{src}"  onchange="document.getElementById('preview_img').src = this.value;" />
+					<a id="preview_img_a" href="{src}" target="_black"><img id="preview_img" src="{src}"></a>
+					<span onclick="HtmlVisualEditor.editPanel.uploadImage();" class="upload">上传</span>
 				</div>
 			`
 		},
@@ -440,14 +493,14 @@ HtmlVisualEditor = {
 		},
 		save:function(){
 			var form = wm.getJsonObjectByForm($('#HtmlVisualEditor_EditPanel'));
-			console.log(form);
+			//console.log(form);
 			if(HtmlVisualEditor.editPanel.current == null){
 				msg.alert('error');
 				return;
 			}
 
 			for (var key in form) {
-				console.log(key + ": " + form[key]); // 输出 name: Alice 和 age: 20
+				//console.log(key + ": " + form[key]); // 输出 name: Alice 和 age: 20
 				if(typeof(HtmlVisualEditor.editPanel.current[key]) != 'undefined'){
 					//是html本身的属性，那么直接赋予
 					HtmlVisualEditor.editPanel.current[key] = form[key];
@@ -469,7 +522,45 @@ HtmlVisualEditor = {
 
 			HtmlVisualEditor.editPanel.current.remove();
 		},
+		//编辑源码,针对当前选中的元素，也就是 HtmlVisualEditor.editPanel.current
+		editSource:function(){
+			var source = HtmlVisualEditor.editPanel.current.innerHTML;
+			if(source == null || source.length < 1){
+				msg.info('当前选中区域无可编辑的源码');
+				return;
+			}
+			
+			var text = '<div style=" height: 100%; overflow: hidden;">'
+							+'<div id="HtmlVisualEditor-editPanel-editSource-editormd"><!-- 代码编辑 --></div>'
+							+'<div style="margin-top: -110px; z-index: 2147483647; position: absolute; bottom: 20px; left: 356px;"><button style="height: 38px; line-height: 38px; padding: 0 28px; background-color: #4c88ff; color: #fff; white-space: nowrap; text-align: center; font-size: 16px; border: none; border-radius: 2px; cursor: pointer;" onclick="alert(testEditor.getValue())">保存</button></div>'
+					   +'</div>';
+			
+			//弹窗使用说明参考 https://gitee.com/leimingyun/dashboard/wikis/leimingyun/msgjs/preview?sort_id=4112035&doc_id=1473987
+			msg.popups({
+			    text:text,
+			    padding:'2px',
+			    height:'700px',
+				width: '800px',
+			    //background:'#FFFFFF',
+			    opacity:98,
+			});
+			
+			//代码编辑器
+			testEditor = editormd("HtmlVisualEditor-editPanel-editSource-editormd", {
+				width			: "800px",
+				height			: "700px",
+				watch			: false,
+				toolbar			: false,
+				codeFold		: true,
+				searchReplace	: true,
+				placeholder		: "请输入模版变量的代码",
+				value			: HtmlVisualEditor.editPanel.current.innerHTML,
+				theme			: "default",
+				mode			: "text/html",
+				path			: '//res.zvo.cn/module/editor/lib/'
+			});
 
+		}
 
 	},
 	//初始化，比如加载js依赖
@@ -491,6 +582,11 @@ HtmlVisualEditor = {
 		
 		//加载CSS
 		HtmlVisualEditor.util.loadCss('./HtmlVisualEditor.css');
+		
+		//加载editor
+		HtmlVisualEditor.util.loadJs('https://res.zvo.cn/module/editor/editormd.js');
+		HtmlVisualEditor.util.loadCss('https://res.zvo.cn/module/editor/css/editormd.css');
+		
 	}
 
 };

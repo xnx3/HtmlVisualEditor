@@ -1,41 +1,103 @@
 /* 鼠标点中后出现的属性编辑面板相关 */
 #HtmlVisualEditor_EditPanel{
-	position: absolute;
+    position: absolute;
     right: 20px;
     top: 20px;
-    border-style: groove;
+    background-color: #f8f8f8;
+    padding: 1.2rem;
+    border-radius: 0.3rem;
 }
 
 /* 编辑面板的标题，也就是当前正在修改的是哪个，H2 */
 #HtmlVisualEditor_EditPanel h2{
-	font-size:3rem;
+	font-size:2rem;
+    display:none;
 }
-
+#HtmlVisualEditor_EditPanel .line{
+    margin-top: 0.5rem;
+    line-height: 1rem;
+    display: flex;
+}
+#HtmlVisualEditor_EditPanel input{
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 0.3rem;
+    width: 15rem;
+}
+#HtmlVisualEditor_EditPanel>div>.name{
+    font-size: 14px;
+    color: #333;    
+    width: 70px;
+    display: inline-block;
+    line-height: 43px;
+}
 
 /****** 修改图片属性面板相关 ******/
 /* 图片src的输入框 */
+#HtmlVisualEditor_EditPanel .img #preview_img_a{
+    margin-left: -7.25rem;
+    background-color: white;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    line-height: 1.0rem;
+}
 #HtmlVisualEditor_EditPanel .img #preview_img{
-	height:30px;
+    width: 49.7px;
+    min-width: 49.7px;
+    height:100%;
 }
 /* 图片src的输入框 */
 #HtmlVisualEditor_EditPanel .img #HtmlVisualEditor_img_src{
-	padding:0.3rem;
-	width: 155px;
 }
 #HtmlVisualEditor_EditPanel .img .upload{
-	border-style: groove; 
-	padding-left: 10px;
-	padding-right: 10px;
-	cursor: pointer;
+	padding-left: 1.2rem;
+    padding-right: 1.2rem;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #4c88ff;
+    color: #fff;
+    font-size: 14px;
+    line-height: 41px;
 }
 #HtmlVisualEditor_EditPanel #editPanel_Save{
-	border-style: groove;
     cursor: pointer;
-    font-size: 28px;
     padding-left: 55px;
     padding-right: 55px;
     width: 200px;
-    margin: 10px;
     text-align: center;
-    background: yellow;
+    background: #4c88ff;
+    font-size: 16px;
+    color: #fff;
+    height: 46px;
+    line-height: 46px;
+    border-radius: 5px;
+    margin: 0 auto;
+    margin-top: 0.5rem;
 }
+
+
+#HtmlVisualEditor_EditPanel h2{padding: 0 30px;}
+#HtmlVisualEditor_EditPanel .head{
+    font-size: 14px;
+    color: #999; 
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+}
+#HtmlVisualEditor_EditPanel .head div a{text-decoration: none; color: #4c88ff;}
+
+.form-controls{margin-bottom: 20px;padding: 0 30px;}
+.form-controls label{font-size: 14px;color: #333;}
+.form-controls input[type="text"]{padding: 10px; width: 155px; border: 1px solid #ccc; border-radius: 3px; margin-left: 20px;}
+
+.form-controls.previewimg{
+    width: 60px;
+    height: 60px;
+    border: 1px solid #ccc;
+    margin-left: 105px;
+    padding: 0;
+}
+.form-controls.previewimg img{width: 100%;}
+#HtmlVisualEditor_EditPanel label{font-size: 14px;color: #333; width: 100px;}
+
+#HtmlVisualEditor_img_input_file{margin-left: 10px;}
